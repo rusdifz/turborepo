@@ -42,10 +42,15 @@ export class CreateUserDTO implements Partial<User> {
   @IsString()
   fullname: string;
 
-  @IsNotEmpty({ message: "password must be input" })
+  @IsOptional()
   @IsString()
-  @Transform(({ value }) => bcrypt.hashSync(value, 10))
-  password: string;
+  @Transform(({ value }) => {
+    if (value == undefined || !value) {
+      value = "admin";
+    }
+    bcrypt.hashSync(value, 10);
+  })
+  password?: string;
 
   @IsOptional()
   @IsUrl()
@@ -73,7 +78,7 @@ export class CreateUserDTO implements Partial<User> {
 
   @IsOptional()
   @IsNumber()
-  totalAverageWeightRatings: Float32Array;
+  totalAverageWeightRatings: number;
 
   @IsOptional()
   @IsNumber()
@@ -115,7 +120,7 @@ export class UpdateUserDTO implements Partial<User> {
 
   @IsOptional()
   @IsNumber()
-  totalAverageWeightRatings: Float32Array;
+  totalAverageWeightRatings: number;
 
   @IsOptional()
   @IsNumber()

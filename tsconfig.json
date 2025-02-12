@@ -11,6 +11,10 @@
       "@repo/interfaces/*": ["packages/interfaces/src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "apps/frontend-repo/src/app/dashboard/notpage"
+  ],
   "exclude": ["node_modules"]
 }

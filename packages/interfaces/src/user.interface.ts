@@ -1,6 +1,6 @@
-enum GenderEnum {
+export enum GenderEnum {
   MALE = "male",
-  FEMALE = "faemale",
+  FEMALE = "female",
 }
 
 export interface IUser {
@@ -13,9 +13,13 @@ export interface IUser {
   age: number;
   gender: GenderEnum;
   address: string;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date;
+  created_at: Date | null;
+  updated_at: Date | null;
+  deleted_at: Date | null;
   created_by: string;
   updated_by: string;
+  totalAverageWeightRatings: number;
+  numberOfRents: number;
+  recentlyActive: number;
+  potentialScore: number;
 }
