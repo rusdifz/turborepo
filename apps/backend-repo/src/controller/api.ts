@@ -18,7 +18,11 @@ import {
 import { setPagination } from "../helpers/pagination.helper";
 import { IPagination } from "../interfaces/pagination.interface";
 import { User } from "../entities/user";
-import { CreateUserDTO, UpdateUserDTO } from "../dto/user.dto";
+import {
+  CreateUserDTO,
+  ReqGetUserListDTO,
+  UpdateUserDTO,
+} from "../dto/user.dto";
 
 export async function getUserDetailController(
   req: Request,
@@ -52,12 +56,9 @@ export async function getUsersController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const reqQuery: any = req.query;
+    const reqQuery = plainToInstance(ReqGetUserListDTO, req.query);
 
-    const page = reqQuery?.page ?? 1;
-    const limit = reqQuery?.limit ?? 10;
-
-    const users = await getUsers({ page, limit });
+    const users = await getUsers(reqQuery);
 
     let mapResp = {
       message: "success but data list empty",
