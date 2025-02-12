@@ -18,9 +18,7 @@ export async function authenticate(
       token !=
       "099098de4100a22c5f23cc002cc170616e1d439ecaa618fe4e1345522b0063bc"
     )
-      return res
-        .status(401)
-        .json({ message: "Unauthorized", error: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized", error: "Unauthorized" });
 
     next();
   } catch (error) {

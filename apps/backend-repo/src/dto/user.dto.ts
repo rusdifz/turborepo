@@ -1,10 +1,14 @@
 import {
+  IsDate,
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
 } from "class-validator";
+import * as bcrypt from "bcryptjs";
 import { Transform } from "class-transformer";
 import { User } from "../entities/user";
 import { GenderEnum } from "@repo/interfaces/user";
@@ -26,23 +30,62 @@ export class ReqGetUserListDTO {
 }
 
 export class CreateUserDTO implements Partial<User> {
+  @IsNotEmpty({ message: "username must be input" })
+  @IsString()
   username: string;
+
+  @IsNotEmpty({ message: "email must be input" })
+  @IsEmail()
   email: string;
+
+  @IsOptional()
+  @IsString()
   fullname: string;
+
+  @IsNotEmpty({ message: "password must be input" })
+  @IsString()
+  @Transform(({ value }) => bcrypt.hashSync(value, 10))
   password: string;
+
+  @IsOptional()
+  @IsUrl()
   profile_picture: string;
+
+  @IsOptional()
+  @IsNotEmpty()
   age: number;
+
+  @IsOptional()
+  @IsEnum(GenderEnum, { message: "Value gender must be in list enum" })
   gender: GenderEnum;
+
+  @IsOptional()
+  @IsOptional()
   address: string;
-  created_at: Date;
-  created_by: string;
+
+  @IsOptional()
+  @IsDate()
+  created_at: Date = new Date();
+
+  @IsOptional()
+  @IsString()
+  created_by: string = "admin";
+
+  @IsOptional()
+  @IsNumber()
   totalAverageWeightRatings: Float32Array;
+
+  @IsOptional()
+  @IsNumber()
   numberOfRents: number;
+
+  @IsOptional()
+  @IsNumber()
   recentlyActive: number;
 }
 
 export class UpdateUserDTO implements Partial<User> {
-  @IsNotEmpty({ message: "Nama harus diisi." })
+  @IsOptional()
   @IsEmail()
   email: string;
 
@@ -51,11 +94,11 @@ export class UpdateUserDTO implements Partial<User> {
   fullname?: string;
 
   @IsOptional()
-  @IsString()
+  @IsUrl()
   profile_picture?: string;
 
   @IsOptional()
-  @IsString()
+  @IsNumber()
   age?: number;
 
   @IsOptional()
@@ -70,7 +113,15 @@ export class UpdateUserDTO implements Partial<User> {
 
   updated_by: string = "admin";
 
+  @IsOptional()
+  @IsNumber()
   totalAverageWeightRatings: Float32Array;
+
+  @IsOptional()
+  @IsNumber()
   numberOfRents: number;
+
+  @IsOptional()
+  @IsNumber()
   recentlyActive: number;
 }

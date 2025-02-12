@@ -1,6 +1,11 @@
 // controller/api.ts
 import { Request, Response, NextFunction } from "express";
-import { instanceToPlain, plainToInstance } from "class-transformer";
+import {
+  classToPlain,
+  instanceToPlain,
+  plainToClass,
+  plainToInstance,
+} from "class-transformer";
 import { validate } from "class-validator";
 import * as bcrypt from "bcrypt";
 
@@ -90,19 +95,19 @@ export async function updateUserController(
     const user: Partial<User> = plainToInstance(UpdateUserDTO, req.body);
 
     // Validasi DTO
-    const errors = await validate(UpdateUserDTO);
+    validate(user).then((errors) => {
+      // errors is an array of validation errors
+      if (errors.length > 0) {
+        const errorMessages = errors
+          .map((error) => Object.values(error.constraints || {}))
+          .flat();
+        res
+          .status(400)
+          .json({ message: "Validation failed", errors: errorMessages });
+      }
+    });
 
-    if (errors.length > 0) {
-      // Map error ke pesan yang lebih sederhana
-      const errorMessages = errors
-        .map((error) => Object.values(error.constraints || {}))
-        .flat();
-      res
-        .status(400)
-        .json({ message: "Validation failed", errors: errorMessages });
-    }
-
-    const resUpdate = await updateUser(userId, user);
+    const resUpdate = await updateUser(userId, instanceToPlain(user));
 
     res.status(200).json({ message: "Success Update", data: resUpdate });
   } catch (error) {
@@ -116,42 +121,25 @@ export async function createUserController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const plainUserClass = plainToInstance(CreateUserDTO, req.body);
+    const user = plainToInstance(CreateUserDTO, req.body);
 
     // Validasi DTO
-    const user = await validateInsert(plainUserClass);
+    validate(user).then((errors) => {
+      // errors is an array of validation errors
+      if (errors.length > 0) {
+        const errorMessages = errors
+          .map((error) => Object.values(error.constraints || {}))
+          .flat();
+        res
+          .status(400)
+          .json({ message: "Validation failed", errors: errorMessages });
+      }
+    });
 
-    if (user.err.length > 0) {
-      res.status(400).json({ message: "Validation failed", errors: user.err });
-    }
-
-    const resCreate = await createUser(instanceToPlain(user.data));
+    const resCreate = await createUser(instanceToPlain(user));
 
     res.status(200).json({ message: "Success Update", data: resCreate });
   } catch (error) {
     next(error);
   }
-}
-
-async function validateInsert(
-  data: CreateUserDTO
-): Promise<{ data: Partial<User>; err: any }> {
-  let error: any = [];
-
-  if (!data.email) {
-    error.push("Email must be insert");
-  }
-
-  if (!data.password) {
-    error.push("Password must be insert");
-  } else {
-    data.password = await bcrypt.hash(data.password, 10);
-  }
-
-  data.created_at = new Date();
-
-  return {
-    data,
-    err: error,
-  };
 }
