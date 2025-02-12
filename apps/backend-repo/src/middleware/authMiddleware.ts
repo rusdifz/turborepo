@@ -9,13 +9,18 @@ export async function authenticate(
     const authHeader = req.headers.authorization;
 
     if (!authHeader?.startsWith("Bearer ")) {
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized", error: "Unauthorized" });
     }
 
-    // const token = authHeader.split(" ")[1];
+    const token = authHeader.split(" ")[1];
 
-    // if (token != "rusdifz")
-    //   return res.status(401).json({ message: "Unauthorized" });
+    if (
+      token !=
+      "099098de4100a22c5f23cc002cc170616e1d439ecaa618fe4e1345522b0063bc"
+    )
+      return res
+        .status(401)
+        .json({ message: "Unauthorized", error: "Unauthorized" });
 
     next();
   } catch (error) {

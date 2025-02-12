@@ -1,6 +1,11 @@
 // controller/api.ts
-import { Request, Response, NextFunction, Errback } from "express";
+import { Request, Response, NextFunction } from "express";
+import { instanceToPlain, plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import * as bcrypt from "bcrypt";
+
 import {
+  createUser,
   getUserById,
   getUsers,
   updateUser,
@@ -8,6 +13,7 @@ import {
 import { setPagination } from "../helpers/pagination.helper";
 import { IPagination } from "../interfaces/pagination.interface";
 import { User } from "../entities/user";
+import { CreateUserDTO, UpdateUserDTO } from "../dto/user.dto";
 
 export async function getUserDetailController(
   req: Request,
@@ -15,7 +21,7 @@ export async function getUserDetailController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = req.params["id"];
+    const userId = req.params["user_id"];
 
     if (!userId || userId == undefined || userId == null) {
       res
@@ -29,7 +35,7 @@ export async function getUserDetailController(
       res.status(404).json({ message: "Data not found", data: null });
     }
 
-    res.status(200).json(user);
+    res.status(200).json({ message: "Success", data: user });
   } catch (error) {
     next(error);
   }
@@ -71,8 +77,9 @@ export async function updateUserController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = req.params["id"];
-    const data: Partial<User> = req.body;
+    console.log("this");
+
+    const userId = req.params["user_id"];
 
     if (!userId || userId == undefined || userId == null) {
       res
@@ -80,10 +87,73 @@ export async function updateUserController(
         .json({ message: "Bad Request", error: "User id is required" });
     }
 
-    await updateUser(userId, data);
+    const user: Partial<User> = plainToInstance(UpdateUserDTO, req.body);
 
-    res.status(200).json({ id: userId, ...data });
+    // Validasi DTO
+    const errors = await validate(UpdateUserDTO);
+
+    if (errors.length > 0) {
+      // Map error ke pesan yang lebih sederhana
+      const errorMessages = errors
+        .map((error) => Object.values(error.constraints || {}))
+        .flat();
+      res
+        .status(400)
+        .json({ message: "Validation failed", errors: errorMessages });
+    }
+
+    const resUpdate = await updateUser(userId, user);
+
+    res.status(200).json({ message: "Success Update", data: resUpdate });
   } catch (error) {
     next(error);
   }
+}
+
+export async function createUserController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    console.log("this");
+
+    const plainUserClass = plainToInstance(CreateUserDTO, req.body);
+
+    // Validasi DTO
+    const user = await validateInsert(plainUserClass);
+
+    if (user.err.length > 0) {
+      res.status(400).json({ message: "Validation failed", errors: user.err });
+    }
+
+    const resCreate = await createUser(instanceToPlain(user.data));
+
+    res.status(200).json({ message: "Success Update", data: resCreate });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function validateInsert(
+  data: CreateUserDTO
+): Promise<{ data: Partial<User>; err: any }> {
+  let error: any = [];
+
+  if (!data.email) {
+    error.push("Email must be insert");
+  }
+
+  if (!data.password) {
+    error.push("Password must be insert");
+  } else {
+    data.password = await bcrypt.hash(data.password, 10);
+  }
+
+  data.created_at = new Date();
+
+  return {
+    data,
+    err: error,
+  };
 }

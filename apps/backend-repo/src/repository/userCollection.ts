@@ -17,8 +17,6 @@ export async function getUsers(
   props: ReqGetUserListDTO
 ): Promise<{ data: User[]; count: number }> {
   try {
-    console.log("props", props);
-
     const query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
       usersCollection;
 
@@ -50,14 +48,19 @@ export async function updateUser(
   data: Partial<User>
 ): Promise<Partial<User>> {
   try {
-    const updateData = await usersCollection
+    await usersCollection
       .doc(userId)
       .update({ ...data, update_at: new Date() });
 
-    console.log("update data", updateData);
+    const user = getUserById(userId);
 
-    return data;
+    return user;
   } catch (error: any) {
     throw new Error(error);
   }
+}
+
+export async function createUser(data: Partial<User>) {
+  const resp = await usersCollection.add(data);
+  return { id: resp.id, ...data };
 }
