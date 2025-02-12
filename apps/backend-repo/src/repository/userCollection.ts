@@ -1,23 +1,63 @@
-// import { db } from "../config/firebaseConfig";
-// import { User } from "../entities/user";
+import { db } from "../config/firebaseConfig";
+import { User } from "../entities/user";
+import { ReqGetUserListDTO } from "../dto/user.dto";
 
-// export interface FirestoreUser extends User {
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
+const usersCollection = db.collection("users");
 
-// export const getUserById = async (
-//   id: string
-// ): Promise<FirestoreUser | null> => {
-//   const userRef = db.collection("users").doc(id);
-//   const doc = await userRef.get();
-//   return doc.exists ? (doc.data() as FirestoreUser) : null;
-// };
+export async function getUserById(userId: string): Promise<User | null> {
+  try {
+    const doc = await usersCollection.doc(userId).get();
+    return doc.exists ? ({ id: doc.id, ...doc.data() } as User) : null;
+  } catch (error: any) {
+    throw new Error(error.stack);
+  }
+}
 
-// export const updateUser = async (
-//   id: string,
-//   data: Partial<User>
-// ): Promise<void> => {
-//   const userRef = db.collection("users").doc(id);
-//   await userRef.set({ ...data, updatedAt: new Date() }, { merge: true });
-// };
+export async function getUsers(
+  props: ReqGetUserListDTO
+): Promise<{ data: User[]; count: number }> {
+  try {
+    console.log("props", props);
+
+    const query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
+      usersCollection;
+
+    const [data, count] = await Promise.all([
+      query
+        .offset((props.page - 1) * props.limit)
+        .limit(props.limit)
+        .get(),
+      query.count().get(),
+    ]);
+
+    //map data res
+    const respData = data.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as User[];
+
+    return {
+      data: respData,
+      count: count.data().count,
+    };
+  } catch (error: any) {
+    throw new Error(error.stack);
+  }
+}
+
+export async function updateUser(
+  userId: string,
+  data: Partial<User>
+): Promise<Partial<User>> {
+  try {
+    const updateData = await usersCollection
+      .doc(userId)
+      .update({ ...data, update_at: new Date() });
+
+    console.log("update data", updateData);
+
+    return data;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}

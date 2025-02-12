@@ -1,45 +1,25 @@
-// import { Request, Response, NextFunction } from "express";
-// import { auth } from "firebase-admin";
+import { Request, Response, NextFunction } from "express";
 
-// export const authMiddleware = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const token: any = req.headers.authorization?.split("Bearer ")[1];
-//   if (!token) {
-//     res.status(401).json({ error: "Unauthorized" });
-//   }
+export async function authenticate(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const authHeader = req.headers.authorization;
 
-//   try {
-//     const decodedToken = await auth().verifyIdToken(token);
-//     // req.user = decodedToken;
-//     next();
-//   } catch (error) {
-//     res.status(401).json({ error: "Invalid token" });
-//   }
-// };
+    if (!authHeader?.startsWith("Bearer ")) {
+      res.status(401).json({ message: "Unauthorized" });
+    }
 
-// // export async function authMiddleware(
-// //   req: Request,
-// //   res: Response,
-// //   next: NextFunction
-// // ) {
-// //   try {
-// //   } catch (error) {}
-// // }
+    // const token = authHeader.split(" ")[1];
 
-// // // middleware/authMiddleware.ts
-// // import { Request, Response, NextFunction } from 'express';
+    // if (token != "rusdifz")
+    //   return res.status(401).json({ message: "Unauthorized" });
 
-// // export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-// //   // Ambil token dari header Authorization
-// //   const token = req.headers.authorization;
-
-// //   // Validasi sederhana: cek apakah token ada dan cocok dengan nilai tertentu
-// //   if (!token || token !== 'Bearer valid-token') {
-// //     return res.status(401).json({ error: 'Unauthorized' });
-// //   }
-
-// //   next();
-// // };
+    next();
+  } catch (error) {
+    // throw new Error(error);
+    res.status(401).json();
+  }
+}
