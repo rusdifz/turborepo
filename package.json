@@ -2,12 +2,9 @@
   "name": "ebuddy-technicaltest-fauzan",
   "private": true,
   "scripts": {
-    "dev": "turbo dev",
     "build": "turbo build",
+    "dev": "turbo dev",
     "lint": "turbo lint",
-    "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules",
-    "serve": "turbo run serve",
-    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
@@ -17,8 +14,7 @@
     "prettier": "^3.5.0"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=18"
   },
   "packageManager": "npm@10.8.2",
   "workspaces": [
