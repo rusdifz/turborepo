@@ -116,8 +116,6 @@ export async function createUserController(
   next: NextFunction
 ): Promise<void> {
   try {
-    console.log("this");
-
     const plainUserClass = plainToInstance(CreateUserDTO, req.body);
 
     // Validasi DTO
