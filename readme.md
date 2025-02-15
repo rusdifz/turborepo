@@ -1,6 +1,12 @@
 # Project Name
 
 Turbo Repo Example
+tech stack :
+
+- express js
+- next js
+- firebase
+- react MUI
 
 ## Getting Started
 
