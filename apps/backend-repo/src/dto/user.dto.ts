@@ -15,10 +15,10 @@ import { GenderEnum } from "@repo/interfaces/user";
 
 export class ReqGetUserListDTO {
   @IsOptional()
-  sort?: string = "name";
+  sort?: string;
 
   @IsOptional()
-  order?: string = "ASC";
+  order?: any;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))

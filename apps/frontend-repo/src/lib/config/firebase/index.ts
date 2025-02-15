@@ -1,6 +1,8 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 
+//account for testing = username = tester@gmail.com, password=tester1234
+
 const firebaseConfig = {
   apiKey: "AIzaSyA5584gPLEivEf0QOKf83NEqx6vKwtV_Bs",
   authDomain: "crudfirebase-f173a.firebaseapp.com",
@@ -17,7 +19,7 @@ if (!getApps().length) {
   app = initializeApp(firebaseConfig);
   if (process.env.NODE_ENV === "development") {
     const auth = getAuth();
-    connectAuthEmulator(auth, "http://localhost:9099");
+    connectAuthEmulator(auth, "https://");
   }
 }
 

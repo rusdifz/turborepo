@@ -1,20 +1,14 @@
-import { createStore, applyMiddleware } from "redux";
+// store/store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import thunk from "redux-thunk";
-import { userReducer } from "./reducers";
+import userReducer from "./reducers";
 
-// export const store = configureStore({
-//     reducer: userReducer,
-//     middleware: getDefaultMiddleware => getDefaultMiddleware({
-//       thunk: {
-//         extraArgument: myCustomApiService
-//       }
-//     })
-
-// });
-
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     users: userReducer,
   },
 });
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export default store;

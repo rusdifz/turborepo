@@ -1,48 +1,39 @@
+import { createReducer } from "@reduxjs/toolkit";
 import {
-  FETCH_USERS_REQUEST,
-  FETCH_USERS_SUCCESS,
-  FETCH_USERS_FAILURE,
-  UPDATE_USER_REQUEST,
-  UPDATE_USER_SUCCESS,
-  UPDATE_USER_FAILURE,
+  fetchUsersStart,
+  fetchUsersSuccess,
+  fetchUsersFailure,
 } from "./actions";
-import { User } from "../apis/user";
 
-interface State {
-  users: User[];
+interface UserState {
   loading: boolean;
+  success: boolean;
   error: string | null;
-  updateStatus: "idle" | "loading" | "success" | "error";
+  users: any[];
 }
 
-const initialState: State = {
-  users: [],
+const initialState: UserState = {
   loading: false,
+  success: false,
   error: null,
-  updateStatus: "idle",
+  users: [],
 };
 
-export const userReducer = (state = initialState, action: any): State => {
-  switch (action.type) {
-    case FETCH_USERS_REQUEST:
-      return { ...state, loading: true, error: null };
-    case FETCH_USERS_SUCCESS:
-      return { ...state, loading: false, users: action.payload };
-    case FETCH_USERS_FAILURE:
-      return { ...state, loading: false, error: action.payload };
-    case UPDATE_USER_REQUEST:
-      return { ...state, updateStatus: "loading" };
-    case UPDATE_USER_SUCCESS:
-      return {
-        ...state,
-        updateStatus: "success",
-        users: state.users.map((u) =>
-          u.id === action.payload.id ? action.payload : u
-        ),
-      };
-    case UPDATE_USER_FAILURE:
-      return { ...state, updateStatus: "error", error: action.payload };
-    default:
-      return state;
-  }
-};
+const userReducer = createReducer(initialState, (builder) => {
+  builder
+    .addCase(fetchUsersStart, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchUsersSuccess, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.users = action.payload;
+    })
+    .addCase(fetchUsersFailure, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+});
+
+export default userReducer;

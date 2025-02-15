@@ -23,6 +23,7 @@ import {
   ReqGetUserListDTO,
   UpdateUserDTO,
 } from "../dto/user.dto";
+import { calculatePotentialScore } from "../helpers/potentialScore";
 
 export async function getUserDetailController(
   req: Request,
@@ -59,6 +60,7 @@ export async function getUsersController(
     const reqQuery = plainToInstance(ReqGetUserListDTO, req.query);
 
     const users = await getUsers(reqQuery);
+    // console.log("users", users);
 
     let mapResp = {
       message: "success but data list empty",
@@ -108,7 +110,21 @@ export async function updateUserController(
       }
     });
 
-    const resUpdate = await updateUser(userId, instanceToPlain(user));
+    const userPlain = instanceToPlain(user);
+    console.log("before");
+
+    const getDetail = await getUserById(userId);
+    console.log("after");
+
+    userPlain["potentialScore"] = calculatePotentialScore(
+      getDetail.totalAverageWeightRatings,
+      getDetail.numberOfRents,
+      getDetail.recentlyActive
+    );
+    userPlain["update_at"] = new Date();
+    // userPlain["recentlyActive"] = Date.now();
+
+    const resUpdate = await updateUser(userId, userPlain);
 
     res.status(200).json({ message: "Success Update", data: resUpdate });
   } catch (error) {
