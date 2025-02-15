@@ -17,13 +17,13 @@ gitb clone https://github.com/rusdifz/turborepo.git
 2. Install Depedencies :
 
 ```bash
-    npm install
+npm install
 ```
 
 3. Set up environment variables:
 
 ```bash
-    cp .env.example .env
+cp .env.example .env
 ```
 
 4. Run development server :
