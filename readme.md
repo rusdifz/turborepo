@@ -4,7 +4,7 @@ Turbo Repo Example
 tech stack :
 
 - express js
-- next js
+- next js 14
 - firebase
 - react MUI
 
