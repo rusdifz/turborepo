@@ -122,7 +122,7 @@ export async function updateUserController(
       getDetail.recentlyActive
     );
     userPlain["update_at"] = new Date();
-    // userPlain["recentlyActive"] = Date.now();
+    userPlain["recentlyActive"] = Date.now();
 
     const resUpdate = await updateUser(userId, userPlain);
 

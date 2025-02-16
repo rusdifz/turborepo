@@ -45,3 +45,7 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+user login for test : 
+username : tester@gmail.com
+password : tester1234
